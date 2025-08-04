@@ -8,9 +8,3 @@ export default defineConfig({
     exclude: ['lucide-react'],
   },
 });
-
-//Making a change
-//Hello?
-Checking if it works hereee>((resolve, reject) => {
-  
-})
