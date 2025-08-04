@@ -17,7 +17,7 @@ export const TurbidityMap: React.FC<TurbidityMapProps> = ({
 }) => {
   const center = sensors.length > 0 
     ? [sensors[0].location.lat, sensors[0].location.lng] as [number, number]
-    : [40.7128, -74.0060] as [number, number];
+    : [52.2053, 0.1192] as [number, number];
 
   return (
     <div className="h-full w-full rounded-lg overflow-hidden shadow-lg">
