@@ -39,7 +39,7 @@
 +            <div className="flex bg-gray-100 rounded-lg p-1 mb-4">
 +              <button
 +                onClick={() => setActiveTab('sensors')}
-+                className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
++                className={\`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
 +                  activeTab === 'sensors'
 +                    ? 'bg-white text-blue-600 shadow-sm'
 +                    : 'text-gray-600 hover:text-gray-800'
