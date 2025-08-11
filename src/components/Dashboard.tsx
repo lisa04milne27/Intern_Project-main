@@ -1,0 +1,268 @@
+import React from 'react';
+import { TurbiditySensor } from '../types/sensor';
+import { getTurbidityLevel } from '../utils/turbidityUtils';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+interface DashboardProps {
+  sensors: TurbiditySensor[];
+}
+
+export const Dashboard: React.FC<DashboardProps> = ({ sensors }) => {
+  const onlineSensors = sensors.filter(s => s.status === 'online');
+  
+  // Calculate overall water quality score (0-100)
+  const avgTurbidity = onlineSensors.length > 0 
+    ? onlineSensors.reduce((sum, s) => sum + s.turbidity, 0) / onlineSensors.length 
+    : 0;
+  
+  const waterQualityScore = Math.max(0, Math.min(100, 100 - (avgTurbidity * 2)));
+  
+  // Generate mock data for the past 24 hours
+  const generateHourlyData = () => {
+    const data = [];
+    const now = new Date();
+    
+    for (let i = 23; i >= 0; i--) {
+      const time = new Date(now.getTime() - i * 60 * 60 * 1000);
+      const hour = time.getHours();
+      const minute = time.getMinutes();
+      
+      // Generate realistic temperature data (16-20°C with some variation)
+      const baseTemp = 18;
+      const tempVariation = Math.sin(hour / 24 * Math.PI * 2) * 2 + Math.random() * 0.5;
+      const temperature = baseTemp + tempVariation;
+      
+      // Generate dissolved oxygen data (7-9 mg/L)
+      const baseO2 = 8;
+      const o2Variation = Math.sin((hour + 6) / 24 * Math.PI * 2) * 0.5 + Math.random() * 0.3;
+      const dissolvedO2 = baseO2 + o2Variation;
+      
+      data.push({
+        time: `${hour.toString().padStart(2, '0')}:${minute < 30 ? '00' : '30'}`,
+        temperature: Math.round(temperature * 10) / 10,
+        dissolvedO2: Math.round(dissolvedO2 * 10) / 10,
+      });
+    }
+    
+    return data;
+  };
+
+  // Generate past 7 days water quality data
+  const generateWeeklyQuality = () => {
+    const qualities = [];
+    const colors = ['#10B981', '#22C55E', '#F59E0B', '#EF4444', '#DC2626'];
+    
+    for (let i = 6; i >= 0; i--) {
+      const qualityIndex = Math.floor(Math.random() * 5);
+      qualities.push(colors[qualityIndex]);
+    }
+    
+    return qualities;
+  };
+
+  const hourlyData = generateHourlyData();
+  const weeklyQualities = generateWeeklyQuality();
+  
+  // Calculate turbidity score (0-100, higher is better)
+  const turbidityScore = Math.max(0, Math.min(100, 100 - avgTurbidity));
+
+  return (
+    <div className="space-y-6">
+      {/* Top Row - Key Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Overall Water Quality */}
+        <div className="bg-white rounded-lg p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Overall water quality</h3>
+          <div className="flex items-center justify-center">
+            <div className="relative w-32 h-32">
+              <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
+                <path
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  fill="none"
+                  stroke="#E5E7EB"
+                  strokeWidth="2"
+                />
+                <path
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  fill="none"
+                  stroke="#10B981"
+                  strokeWidth="2"
+                  strokeDasharray={`${waterQualityScore}, 100`}
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-3xl font-bold text-gray-800">{Math.round(waterQualityScore)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Past 7 Days */}
+        <div className="bg-white rounded-lg p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Past 7 days</h3>
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <div className="flex gap-1">
+                {weeklyQualities.map((color, index) => (
+                  <div
+                    key={index}
+                    className="w-8 h-4 rounded-sm"
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="flex justify-between text-sm text-gray-500">
+              <span>D-7</span>
+              <span>Today</span>
+            </div>
+            
+            <div className="mt-6">
+              <h4 className="text-sm font-medium text-gray-700 mb-2">Predicted bacteria level</h4>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="flex-1 h-2 bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 rounded-full relative">
+                  <div 
+                    className="absolute top-0 w-0.5 h-4 bg-gray-800 -mt-1"
+                    style={{ left: '15%' }}
+                  />
+                </div>
+              </div>
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>0</span>
+                <span>3</span>
+                <span>7</span>
+                <span>10</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Turbidity */}
+        <div className="bg-white rounded-lg p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Turbidity</h3>
+          <div className="flex items-center justify-center">
+            <div className="relative w-32 h-32">
+              <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
+                <path
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  fill="none"
+                  stroke="#E5E7EB"
+                  strokeWidth="2"
+                />
+                <path
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  fill="none"
+                  stroke="#10B981"
+                  strokeWidth="2"
+                  strokeDasharray={`${turbidityScore}, 100`}
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-3xl font-bold text-gray-800">{Math.round(turbidityScore)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Row - Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Temperature Chart */}
+        <div className="bg-white rounded-lg p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-800">Temperature</h3>
+            <span className="text-sm text-gray-500">°C</span>
+          </div>
+          <div className="mb-4">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+              <span className="text-sm text-gray-600">Temperature</span>
+            </div>
+          </div>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={hourlyData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis 
+                  dataKey="time" 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 12, fill: '#9CA3AF' }}
+                />
+                <YAxis 
+                  domain={[10, 25]}
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 12, fill: '#9CA3AF' }}
+                />
+                <Tooltip 
+                  contentStyle={{
+                    backgroundColor: 'white',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                  }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="temperature" 
+                  stroke="#3B82F6" 
+                  strokeWidth={2}
+                  dot={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Dissolved Oxygen Chart */}
+        <div className="bg-white rounded-lg p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-800">Dissolved oxygen level</h3>
+            <span className="text-sm text-gray-500">mg/L</span>
+          </div>
+          <div className="mb-4">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+              <span className="text-sm text-gray-600">Dissolved O2</span>
+            </div>
+          </div>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={hourlyData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis 
+                  dataKey="time" 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 12, fill: '#9CA3AF' }}
+                />
+                <YAxis 
+                  domain={[0, 12]}
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 12, fill: '#9CA3AF' }}
+                />
+                <Tooltip 
+                  contentStyle={{
+                    backgroundColor: 'white',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                  }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="dissolvedO2" 
+                  stroke="#3B82F6" 
+                  strokeWidth={2}
+                  dot={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
