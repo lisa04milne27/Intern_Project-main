@@ -10,7 +10,7 @@ export const ExportTab: React.FC<ExportTabProps> = ({ sensors }) => {
   const exportToCSV = () => {
     // Create CSV headers
     const headers = [
-      'Sensor ID_2',
+      'Sensor ID',
       'Sensor Name',
       'Latitude',
       'Longitude',
