@@ -18,7 +18,7 @@ export const MapView: React.FC<MapViewProps> = ({ sensors }) => {
 
   return (
     <div className="h-full">
-      <div className="h-[calc(100vh-12rem)] bg-white rounded-lg shadow-sm">
+      <div className="h-[calc(100vh-10rem)] bg-white rounded-lg shadow-sm">
         <TurbidityMap
           sensors={sensors}
           selectedSensor={selectedSensor}
