@@ -9,8 +9,7 @@ interface DashboardStatsProps {
 
 export const DashboardStats: React.FC<DashboardStatsProps> = ({ sensors }) => {
   const onlineSensors = sensors.filter(s => s.status === 'online');
-  const offlineSensors = sensors.filter(s => s.status === 'offline');
-  const maintenanceSensors = sensors.filter(s => s.status === 'maintenance');
+
   
   const avgTurbidity = onlineSensors.length > 0 
     ? onlineSensors.reduce((sum, s) => sum + s.turbidity, 0) / onlineSensors.length 
@@ -28,22 +27,8 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ sensors }) => {
       color: 'text-green-600',
       bgColor: 'bg-green-50',
     },
-    {
-      title: 'Offline Sensors',
-      value: offlineSensors.length,
-      total: sensors.length,
-      icon: WifiOff,
-      color: 'text-red-600',
-      bgColor: 'bg-red-50',
-    },
-    {
-      title: 'Maintenance',
-      value: maintenanceSensors.length,
-      total: sensors.length,
-      icon: Settings,
-      color: 'text-yellow-600',
-      bgColor: 'bg-yellow-50',
-    },
+
+
     {
       title: 'Avg Turbidity',
       value: avgTurbidity.toFixed(1),
