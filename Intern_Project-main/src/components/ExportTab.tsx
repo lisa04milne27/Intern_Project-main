@@ -1,6 +1,6 @@
 import React from 'react';
 import { TurbiditySensor } from '../types/sensor';
-import { Download, FileText, Calendar } from 'lucide-react';
+import { Download, FileText } from 'lucide-react';
 
 interface ExportTabProps {
   sensors: TurbiditySensor[];
