@@ -32,15 +32,15 @@ export const Dashboard: React.FC<DashboardProps> = ({ sensors }) => {
       const tempVariation = Math.sin(hour / 24 * Math.PI * 2) * 2 + Math.random() * 0.5;
       const temperature = baseTemp + tempVariation;
       
-      // Generate dissolved oxygen data (7-9 mg/L)
-      const baseO2 = 8;
-      const o2Variation = Math.sin((hour + 6) / 24 * Math.PI * 2) * 0.5 + Math.random() * 0.3;
-      const dissolvedO2 = baseO2 + o2Variation;
-      
+      // Generate turbidity data (e.g., 10-150 NTU)
+      const baseTurbidity = 40;
+      const turbidityVariation = Math.sin((hour + 3) / 24 * Math.PI * 2) * 30 + Math.random() * 20;
+      const turbidity = baseTurbidity + turbidityVariation;
+
       data.push({
         time: `${hour.toString().padStart(2, '0')}:${minute < 30 ? '00' : '30'}`,
         temperature: Math.round(temperature * 10) / 10,
-        dissolvedO2: Math.round(dissolvedO2 * 10) / 10,
+        turbidity: Math.round(turbidity * 10) / 10,
       });
     }
     
@@ -139,7 +139,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ sensors }) => {
 
         {/* Turbidity */}
         <div className="bg-white rounded-lg p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Turbidity</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Average Turbidity</h3>
           <div className="flex items-center justify-center">
             <div className="relative w-32 h-32">
               <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
@@ -170,7 +170,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ sensors }) => {
         {/* Temperature Chart */}
         <div className="bg-white rounded-lg p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-800">Temperature</h3>
+            <h3 className="text-lg font-semibold text-gray-800">Average Temperature</h3>
             <span className="text-sm text-gray-500">°C</span>
           </div>
           <div className="mb-4">
@@ -215,16 +215,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ sensors }) => {
           </div>
         </div>
 
-        {/* Dissolved Oxygen Chart */}
+        {/* Turbidity Chart */}
         <div className="bg-white rounded-lg p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-800">Dissolved oxygen level</h3>
-            <span className="text-sm text-gray-500">mg/L</span>
+            <h3 className="text-lg font-semibold text-gray-800">Average Turbidity</h3>
+            <span className="text-sm text-gray-500">NTU</span>
           </div>
           <div className="mb-4">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-              <span className="text-sm text-gray-600">Dissolved O2</span>
+              <span className="text-sm text-gray-600">Turbidity</span>
             </div>
           </div>
           <div className="h-64">
@@ -238,7 +238,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ sensors }) => {
                   tick={{ fontSize: 12, fill: '#9CA3AF' }}
                 />
                 <YAxis 
-                  domain={[0, 12]}
+                  domain={[0, 200]}
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 12, fill: '#9CA3AF' }}
@@ -253,7 +253,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ sensors }) => {
                 />
                 <Line 
                   type="monotone" 
-                  dataKey="dissolvedO2" 
+                  dataKey="turbidity" 
                   stroke="#3B82F6" 
                   strokeWidth={2}
                   dot={false}

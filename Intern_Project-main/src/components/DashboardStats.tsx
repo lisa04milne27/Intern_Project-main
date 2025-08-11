@@ -1,7 +1,7 @@
 import React from 'react';
 import { TurbiditySensor } from '../types/sensor';
 import { getTurbidityLevel } from '../utils/turbidityUtils';
-import { Droplets, Wifi, WifiOff, Settings, TrendingUp } from 'lucide-react';
+import { Droplets, Wifi, AlertTriangle } from 'lucide-react';
 
 interface DashboardStatsProps {
   sensors: TurbiditySensor[];
@@ -10,14 +10,16 @@ interface DashboardStatsProps {
 export const DashboardStats: React.FC<DashboardStatsProps> = ({ sensors }) => {
   const onlineSensors = sensors.filter(s => s.status === 'online');
 
-  
   const avgTurbidity = onlineSensors.length > 0 
     ? onlineSensors.reduce((sum, s) => sum + s.turbidity, 0) / onlineSensors.length 
     : 0;
-    
-  const excellentCount = sensors.filter(s => getTurbidityLevel(s.turbidity) === 'excellent').length;
-  const poorCount = sensors.filter(s => ['poor', 'very-poor'].includes(getTurbidityLevel(s.turbidity))).length;
-  
+
+  // Find sensor with highest turbidity
+  const highestTurbiditySensor =
+    sensors.length > 0
+      ? sensors.reduce((max, s) => (s.turbidity > max.turbidity ? s : max), sensors[0])
+      : null;
+
   const stats = [
     {
       title: 'Online Sensors',
@@ -27,8 +29,6 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ sensors }) => {
       color: 'text-green-600',
       bgColor: 'bg-green-50',
     },
-
-
     {
       title: 'Avg Turbidity',
       value: avgTurbidity.toFixed(1),
@@ -37,8 +37,17 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ sensors }) => {
       color: 'text-blue-600',
       bgColor: 'bg-blue-50',
     },
+    {
+      title: 'Highest Turbidity',
+      value: highestTurbiditySensor ? highestTurbiditySensor.turbidity : 'N/A',
+      unit: highestTurbiditySensor ? 'NTU' : undefined,
+      location: highestTurbiditySensor ? highestTurbiditySensor.name : '',
+      icon: AlertTriangle,
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-50',
+    },
   ];
-  
+
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       {stats.map((stat, index) => (
@@ -53,10 +62,16 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ sensors }) => {
                 {stat.unit && (
                   <span className="text-xs text-gray-500">{stat.unit}</span>
                 )}
-                {stat.total && (
+                {stat.total !== undefined && (
                   <span className="text-xs text-gray-400">/{stat.total}</span>
                 )}
               </div>
+              {/* Show location for highest turbidity */}
+              {stat.title === 'Highest Turbidity' && stat.location && (
+                <div className="text-xs text-gray-700 mt-1">
+                  {stat.location}
+                </div>
+              )}
             </div>
             <stat.icon className={`w-8 h-8 ${stat.color} opacity-80`} />
           </div>

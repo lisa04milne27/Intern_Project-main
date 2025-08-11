@@ -1,30 +1,40 @@
 import React, { useState } from 'react';
-import { Droplets, BarChart3, Map, Radio } from 'lucide-react';
+import { Droplets, BarChart3, Map, Radio, Download } from 'lucide-react';
 import { useSensorData } from './hooks/useSensorData';
 import { Dashboard } from './components/Dashboard';
 import { MapView } from './components/MapView';
 import { SensorsView } from './components/SensorsView';
+import { ExportTab } from './components/ExportTab';
+import { DashboardStats } from './components/DashboardStats';
 
-type ActiveTab = 'dashboard' | 'map' | 'sensors';
+type ActiveTab = 'dashboard' | 'map' | 'sensors' | 'export';
+
+const navigationItems = [
+  { id: 'dashboard' as const, label: 'Dashboard', icon: BarChart3 },
+  { id: 'map' as const, label: 'Map', icon: Map },
+  { id: 'sensors' as const, label: 'Sensors', icon: Radio },
+  { id: 'export' as const, label: 'Export', icon: Download },
+];
 
 function App() {
   const { sensors, isLoading, refreshData } = useSensorData();
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
-
-  const navigationItems = [
-    { id: 'dashboard' as const, label: 'Dashboard', icon: BarChart3 },
-    { id: 'map' as const, label: 'Map', icon: Map },
-    { id: 'sensors' as const, label: 'Sensors', icon: Radio },
-  ];
 
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
         return <Dashboard sensors={sensors} />;
       case 'map':
-        return <MapView sensors={sensors} />;
+        return (
+          <div className="space-y-6">
+            <DashboardStats sensors={sensors} />
+            <MapView sensors={sensors} />
+          </div>
+        );
       case 'sensors':
         return <SensorsView sensors={sensors} />;
+      case 'export':
+        return <ExportTab sensors={sensors} />;
       default:
         return <Dashboard sensors={sensors} />;
     }
