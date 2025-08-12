@@ -5,15 +5,30 @@ import { Dashboard } from './components/Dashboard';
 import { MapView } from './components/MapView';
 import { SensorsView } from './components/SensorsView';
 import { ExportTab } from './components/ExportTab';
+import { InfoPage } from './components/InfoPage';
 import { DashboardStats } from './components/DashboardStats';
 
-type ActiveTab = 'dashboard' | 'map' | 'sensors' | 'export';
+type ActiveTab = 'dashboard' | 'map' | 'sensors' | 'export' | 'info';
 
 const navigationItems = [
   { id: 'dashboard' as const, label: 'Dashboard', icon: BarChart3 },
   { id: 'map' as const, label: 'Map', icon: Map },
   { id: 'sensors' as const, label: 'Sensors', icon: Radio },
   { id: 'export' as const, label: 'Export', icon: Download },
+  {
+    id: 'info' as const,
+    label: 'Info',
+    icon: () => (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+    ),
+  },
 ];
 
 function App() {
@@ -35,6 +50,8 @@ function App() {
         return <SensorsView sensors={sensors} />;
       case 'export':
         return <ExportTab sensors={sensors} />;
+      case 'info':
+        return <InfoPage />;
       default:
         return <Dashboard sensors={sensors} />;
     }
