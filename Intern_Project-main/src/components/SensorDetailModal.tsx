@@ -1,7 +1,7 @@
 import React from 'react';
 import { TurbiditySensor } from '../types/sensor';
 import { getTurbidityColor, getTurbidityDescription, formatTimeAgo } from '../utils/turbidityUtils';
-import { X, Droplets, Battery, Thermometer, MapPin, Clock, Wifi, WifiOff, Settings } from 'lucide-react';
+import { X, Droplets, Thermometer, MapPin, Clock, Wifi, WifiOff, Settings } from 'lucide-react';
 
 interface SensorDetailModalProps {
   sensor: TurbiditySensor | null;
@@ -64,16 +64,6 @@ export const SensorDetailModal: React.FC<SensorDetailModalProps> = ({ sensor, on
               </div>
               <p className="text-lg font-semibold text-orange-600">
                 {sensor.waterTemperature}°C
-              </p>
-            </div>
-            
-            <div className="bg-green-50 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-1">
-                <Battery className="w-5 h-5 text-green-500" />
-                <span className="text-sm font-medium text-gray-700">Battery</span>
-              </div>
-              <p className="text-lg font-semibold text-green-600">
-                {sensor.batteryLevel}%
               </p>
             </div>
           </div>
