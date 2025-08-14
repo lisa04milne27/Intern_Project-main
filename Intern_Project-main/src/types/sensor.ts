@@ -8,7 +8,6 @@ export interface TurbiditySensor {
   turbidity: number; // NTU (Nephelometric Turbidity Units)
   status: 'online' | 'offline' | 'maintenance';
   lastUpdated: Date;
-  batteryLevel: number;
   waterTemperature: number;
 }
 

@@ -28,19 +28,6 @@ export const InfoPage: React.FC = () => {
         { range: '25-30°C', level: 'Warm', color: 'bg-yellow-100 text-yellow-800', description: 'Warm water, increased biological activity' },
         { range: '30+°C', level: 'Hot', color: 'bg-red-100 text-red-800', description: 'High temperature, potential stress on aquatic life' },
       ]
-    },
-    {
-      icon: Battery,
-      title: 'Battery Level (%)',
-      description: 'Indicates remaining power in the sensor unit, critical for continuous monitoring.',
-      calculation: 'Calculated from voltage measurements: ((Current Voltage - Min Voltage) / (Max Voltage - Min Voltage)) × 100',
-      ranges: [
-        { range: '80-100%', level: 'Excellent', color: 'bg-green-100 text-green-800', description: 'Full charge, optimal performance' },
-        { range: '60-80%', level: 'Good', color: 'bg-green-50 text-green-700', description: 'Good charge level, normal operation' },
-        { range: '40-60%', level: 'Moderate', color: 'bg-yellow-100 text-yellow-800', description: 'Moderate charge, monitor closely' },
-        { range: '20-40%', level: 'Low', color: 'bg-orange-100 text-orange-800', description: 'Low battery, plan replacement soon' },
-        { range: '0-20%', level: 'Critical', color: 'bg-red-100 text-red-800', description: 'Critical level, immediate replacement needed' },
-      ]
     }
   ];
 
@@ -203,7 +190,6 @@ export const InfoPage: React.FC = () => {
             <ul className="space-y-2 text-sm text-gray-600">
               <li>• Real-time data: Every 5 seconds</li>
               <li>• Historical data: Stored every 15 minutes</li>
-              <li>• Battery status: Updated every hour</li>
               <li>• Calibration: Performed monthly</li>
             </ul>
           </div>
@@ -214,7 +200,6 @@ export const InfoPage: React.FC = () => {
               <li>• Turbidity: ±2% or ±0.1 NTU</li>
               <li>• Temperature: ±0.1°C</li>
               <li>• GPS Location: ±3 meters</li>
-              <li>• Battery Level: ±5%</li>
             </ul>
           </div>
         </div>
@@ -224,7 +209,6 @@ export const InfoPage: React.FC = () => {
           <ul className="space-y-1 text-sm text-blue-700">
             <li>• Turbidity readings may fluctuate due to natural water movement and environmental conditions</li>
             <li>• Temperature variations are normal throughout the day and seasons</li>
-            <li>• Battery life typically ranges from 6-12 months depending on usage and environmental conditions</li>
             <li>• Sensors automatically calibrate but may require manual calibration in extreme conditions</li>
           </ul>
         </div>

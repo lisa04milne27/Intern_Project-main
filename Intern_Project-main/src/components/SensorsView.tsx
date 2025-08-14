@@ -46,7 +46,6 @@ export const SensorsView: React.FC<SensorsViewProps> = ({ sensors }) => {
               <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Last update</th>
               <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Turbidity (NTU)</th>
               <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Temperature (°C)</th>
-              <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Firmware version</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -78,9 +77,6 @@ export const SensorsView: React.FC<SensorsViewProps> = ({ sensors }) => {
                   <div className="text-sm font-medium text-gray-900">
                     {sensor.waterTemperature}
                   </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm text-gray-900">1.0.0</div>
                 </td>
               </tr>
             ))}
