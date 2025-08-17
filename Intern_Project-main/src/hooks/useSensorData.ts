@@ -22,15 +22,10 @@ export const useSensorData = () => {
           const tempChange = (Math.random() - 0.5) * 0.4;
           const newTemperature = sensor.waterTemperature + tempChange;
           
-          // Simulate battery drain (very slow)
-          const batteryDrain = Math.random() < 0.1 ? -1 : 0;
-          const newBatteryLevel = Math.max(0, sensor.batteryLevel + batteryDrain);
-          
           return {
             ...sensor,
             turbidity: Math.round(newTurbidity * 10) / 10,
             waterTemperature: Math.round(newTemperature * 10) / 10,
-            batteryLevel: newBatteryLevel,
             lastUpdated: new Date(),
           };
         })

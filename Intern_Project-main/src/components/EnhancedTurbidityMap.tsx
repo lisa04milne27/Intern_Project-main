@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { TurbidityMap } from './TurbidityMap';
 import { MapControls } from './MapControls';
-import { TurbiditySensor } from '../../types/sensor';
-import { mockHistoricalReadings } from '../../data/mockHistoricalData';
+import { TurbiditySensor } from '../types/sensor';
+import { mockHistoricalData } from '../data/mockHistoricalData';
 import { subDays, isWithinInterval } from 'date-fns';
 
 interface EnhancedTurbidityMapProps {
@@ -16,9 +16,9 @@ export const EnhancedTurbidityMap: React.FC<EnhancedTurbidityMapProps> = ({
   selectedSensor,
   onSensorSelect,
 }) => {
-  const [showHistoricalData, setShowHistoricalData] = useState(false);
+  const [showHistoricalData, setShowHistoricalData] = useState(true);
   const [selectedTimeRange, setSelectedTimeRange] = useState('7d');
-  const [selectedHistoricalReading, setSelectedHistoricalReading] = useState(null);
+  const [selectedHistoricalReading, setSelectedHistoricalReading] = useState<any>(null);
 
   // Filter historical readings based on time range
   const filteredHistoricalReadings = useMemo(() => {
@@ -39,7 +39,7 @@ export const EnhancedTurbidityMap: React.FC<EnhancedTurbidityMapProps> = ({
         startDate = subDays(now, 7);
     }
 
-    return mockHistoricalReadings.filter(reading =>
+    return mockHistoricalData.filter(reading =>
       isWithinInterval(reading.timestamp, { start: startDate, end: now })
     );
   }, [selectedTimeRange]);
@@ -59,7 +59,7 @@ export const EnhancedTurbidityMap: React.FC<EnhancedTurbidityMapProps> = ({
         showHistoricalData={showHistoricalData}
         onHistoricalReadingSelect={handleHistoricalReadingSelect}
       />
-      
+
       <MapControls
         showHistoricalData={showHistoricalData}
         onToggleHistoricalData={setShowHistoricalData}
@@ -108,4 +108,4 @@ export const EnhancedTurbidityMap: React.FC<EnhancedTurbidityMapProps> = ({
       )}
     </div>
   );
-};
+}

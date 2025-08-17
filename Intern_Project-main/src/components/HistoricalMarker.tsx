@@ -1,7 +1,7 @@
 import React from 'react';
 import { Marker, Popup } from 'react-leaflet';
 import { Icon } from 'leaflet';
-import { TurbiditySensor } from '../../types/sensor';
+import { TurbiditySensor } from '../types/sensor';
 import { format } from 'date-fns';
 
 interface HistoricalMarkerProps {
