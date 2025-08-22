@@ -1,17 +1,19 @@
 import React from 'react';
 import { Marker, Popup } from 'react-leaflet';
-import { Icon, divIcon } from 'leaflet';
+import { divIcon } from 'leaflet';
 import { TurbiditySensor } from '../types/sensor';
 import { getTurbidityColor, getTurbidityDescription, formatTimeAgo } from '../utils/turbidityUtils';
-import { Droplets, Battery, Thermometer, Clock } from 'lucide-react';
+import { Droplets, Thermometer, Clock } from 'lucide-react';
 
 interface SensorMarkerProps {
   sensor: TurbiditySensor;
   onSensorClick: (sensor: TurbiditySensor) => void;
+  color?: string;
 }
 
-export const SensorMarker: React.FC<SensorMarkerProps> = ({ sensor, onSensorClick }) => {
-  const color = getTurbidityColor(sensor.turbidity);
+export const SensorMarker: React.FC<SensorMarkerProps> = ({ sensor, onSensorClick, color }) => {
+  // Use color prop if provided, else fallback to default turbidity color
+  const markerColor = color !== undefined ? color : getTurbidityColor(sensor.turbidity);
   
   const customIcon = divIcon({
     html: `
@@ -19,7 +21,7 @@ export const SensorMarker: React.FC<SensorMarkerProps> = ({ sensor, onSensorClic
         width: 24px;
         height: 24px;
         border-radius: 50%;
-        background-color: ${color};
+        background-color: ${markerColor};
         border: 3px solid white;
         box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         display: flex;
@@ -27,8 +29,6 @@ export const SensorMarker: React.FC<SensorMarkerProps> = ({ sensor, onSensorClic
         justify-content: center;
         position: relative;
       ">
-        ${sensor.status === 'offline' ? '<div style="width: 8px; height: 8px; background: #6B7280; border-radius: 50%;"></div>' : ''}
-        ${sensor.status === 'maintenance' ? '<div style="width: 8px; height: 8px; background: #F59E0B; border-radius: 50%;"></div>' : ''}
       </div>
     `,
     className: 'custom-marker',
@@ -52,7 +52,7 @@ export const SensorMarker: React.FC<SensorMarkerProps> = ({ sensor, onSensorClic
             <div className="flex items-center gap-2">
               <Droplets className="w-4 h-4 text-blue-500" />
               <span className="font-medium">Turbidity:</span>
-              <span style={{ color }}>{sensor.turbidity} NTU</span>
+              <span style={{ color: markerColor }}>{sensor.turbidity} NTU</span>
             </div>
             
             <div className="text-xs text-gray-600 mb-2">
@@ -65,11 +65,7 @@ export const SensorMarker: React.FC<SensorMarkerProps> = ({ sensor, onSensorClic
               <span>{sensor.waterTemperature}°C</span>
             </div>
             
-            <div className="flex items-center gap-2">
-              <Battery className="w-4 h-4 text-green-500" />
-              <span className="font-medium">Battery:</span>
-              <span>{sensor.batteryLevel}%</span>
-            </div>
+              {/* Battery section removed: batteryLevel not present in TurbiditySensor */}
             
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-gray-500" />
