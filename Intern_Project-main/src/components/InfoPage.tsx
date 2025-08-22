@@ -132,31 +132,6 @@ export const InfoPage: React.FC = () => {
         ))}
       </div>
 
-      {/* Calculations */}
-      <div className="space-y-6">
-        <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-          <BarChart3 className="w-6 h-6 text-blue-500" />
-          Dashboard Calculations
-        </h2>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {calculations.map((calc, index) => (
-            <div key={index} className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-3">{calc.title}</h3>
-              <div className="bg-gray-50 rounded-lg p-3 mb-3">
-                <h4 className="font-medium text-gray-700 mb-1">Formula:</h4>
-                <code className="text-sm text-blue-600 font-mono">{calc.formula}</code>
-              </div>
-              <p className="text-gray-600 mb-3">{calc.description}</p>
-              <div className="bg-blue-50 rounded-lg p-3">
-                <h4 className="font-medium text-blue-700 mb-1">Example:</h4>
-                <p className="text-sm text-blue-600">{calc.example}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Sensor Status */}
       <div className="space-y-6">
         <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">

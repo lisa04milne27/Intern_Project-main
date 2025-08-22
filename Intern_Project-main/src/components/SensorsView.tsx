@@ -1,12 +1,25 @@
 import React from 'react';
 import { TurbiditySensor } from '../types/sensor';
 import { formatTimeAgo } from '../utils/turbidityUtils';
+import { useTTNData } from '../hooks/useTTNData';
+
+type TTNUplink = {
+  uplink_message?: {
+    decoded_payload?: {
+      turbidity?: number;
+      temperature?: number;
+    };
+  };
+  location?: { lat: number; lng: number };
+};
 
 interface SensorsViewProps {
   sensors: TurbiditySensor[];
 }
 
 export const SensorsView: React.FC<SensorsViewProps> = ({ sensors }) => {
+  const ttnData = useTTNData() as TTNUplink | null;
+  const ttnSensor = ttnData?.uplink_message?.decoded_payload;
   const getStatusBadge = (status: string) => {
     const baseClasses = "inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium";
     
@@ -43,43 +56,56 @@ export const SensorsView: React.FC<SensorsViewProps> = ({ sensors }) => {
             <tr>
               <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Name</th>
               <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th>
-              <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Last update</th>
-              <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Turbidity (NTU)</th>
+              <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Last Updated</th>
+              <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Longitude</th>
+              <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Latitude</th>
               <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Temperature (°C)</th>
+              <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Turbidity (NTU)</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {sensors.map((sensor, index) => (
-              <tr key={sensor.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4">
-                  <div className="text-sm font-medium text-gray-900">{sensor.name}</div>
-                </td>
-                <td className="px-6 py-4">
-                  <span className={getStatusBadge(sensor.status)}>
-                    {getStatusIcon(sensor.status)}
-                    <span className="capitalize">{sensor.status}</span>
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm text-gray-900">
-                    {sensor.lastUpdated.toLocaleDateString('en-GB')}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    {formatTimeAgo(sensor.lastUpdated)}
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm font-medium text-gray-900">
-                    {sensor.turbidity}
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm font-medium text-gray-900">
-                    {sensor.waterTemperature}
-                  </div>
-                </td>
-              </tr>
-            ))}
+            {[...sensors].sort((a, b) => {
+              const numA = parseInt(a.id.replace(/[^\d]/g, ''));
+              const numB = parseInt(b.id.replace(/[^\d]/g, ''));
+              return numA - numB;
+            }).map((sensor, index) => {
+              // Use TTN data for the first sensor, fallback for others
+              const turbidity = index === 0 && ttnSensor?.turbidity !== undefined ? ttnSensor.turbidity : sensor.turbidity;
+              const temperature = index === 0 && ttnSensor?.temperature !== undefined ? ttnSensor.temperature : sensor.waterTemperature;
+              return (
+                <tr key={sensor.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="text-sm font-medium text-gray-900">{sensor.name}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={getStatusBadge(sensor.status)}>
+                      {getStatusIcon(sensor.status)}
+                      <span className="capitalize">{sensor.status}</span>
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm text-gray-900">
+                      {sensor.lastUpdated.toLocaleDateString('en-GB')}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {formatTimeAgo(sensor.lastUpdated)}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">{sensor.location.lng}</td>
+                  <td className="px-6 py-4">{sensor.location.lat}</td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm font-medium text-gray-900">
+                      {temperature}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm font-medium text-gray-900">
+                      {turbidity}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

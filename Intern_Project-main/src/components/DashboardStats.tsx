@@ -20,6 +20,12 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ sensors }) => {
       ? sensors.reduce((max, s) => (s.turbidity > max.turbidity ? s : max), sensors[0])
       : null;
 
+    // Find sensor with highest temperature
+  const highestTemperatureSensor =
+    sensors.length > 0
+      ? sensors.reduce((max, s) => (s.waterTemperature > max.waterTemperature ? s : max), sensors[0])
+      : null;
+
   const stats = [
     {
       title: 'Online Sensors',
@@ -46,6 +52,15 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ sensors }) => {
       color: 'text-orange-600',
       bgColor: 'bg-orange-50',
     },
+    {
+      title: 'Highest Temperature',
+      value: highestTemperatureSensor ? highestTemperatureSensor.waterTemperature : 'N/A',
+      unit: highestTemperatureSensor ? '°C' : undefined,
+      location: highestTemperatureSensor ? highestTemperatureSensor.name : '',
+      icon: AlertTriangle,
+      color: 'text-pink-600',
+      bgColor: 'bg-pink-50',
+    },    
   ];
 
   return (
@@ -72,6 +87,12 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ sensors }) => {
                   {stat.location}
                 </div>
               )}
+              {/* Show location for highest temperature */}
+              {stat.title === 'Highest Temperature' && stat.location && (
+                <div className="text-xs text-gray-700 mt-1">
+                  {stat.location}
+                </div>
+              )}
             </div>
             <stat.icon className={`w-8 h-8 ${stat.color} opacity-80`} />
           </div>
@@ -79,4 +100,4 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ sensors }) => {
       ))}
     </div>
   );
-};
+}

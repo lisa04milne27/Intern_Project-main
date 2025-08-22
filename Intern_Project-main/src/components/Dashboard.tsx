@@ -3,6 +3,19 @@ import { TurbiditySensor } from '../types/sensor';
 import { getTurbidityLevel } from '../utils/turbidityUtils';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
+import { useTTNData } from '../hooks/useTTNData';
+
+function TTNStatus() {
+  const ttnData = useTTNData();
+  if (!ttnData) return <div>Waiting for TTN data...</div>;
+  return (
+    <div>
+      <h3>Latest TTN Data</h3>
+      <pre>{JSON.stringify(ttnData, null, 2)}</pre>
+    </div>
+  );
+}
+
 interface DashboardProps {
   sensors: TurbiditySensor[];
 }
@@ -11,9 +24,18 @@ export const Dashboard: React.FC<DashboardProps> = ({ sensors }) => {
   const onlineSensors = sensors.filter(s => s.status === 'online');
   
   // Calculate overall water quality score (0-100)
-  const avgTurbidity = onlineSensors.length > 0 
-    ? onlineSensors.reduce((sum, s) => sum + s.turbidity, 0) / onlineSensors.length 
-    : 0;
+    const ttnData = useTTNData();
+    // Use TTN data if available, otherwise fallback to first online sensor
+    const latestSensor = ttnData?.uplink_message?.decoded_payload
+      ? {
+          turbidity: ttnData.uplink_message.decoded_payload.turbidity,
+          waterTemperature: ttnData.uplink_message.decoded_payload.temperature,
+          location: ttnData.location || sensors[0]?.location || { lat: 0, lng: 0 },
+        }
+      : sensors[0];
+    const avgTurbidity = latestSensor?.turbidity || 0;
+    const avgTemperature = latestSensor?.waterTemperature || 0;
+    const location = latestSensor?.location || { lat: 0, lng: 0 };
   
   const waterQualityScore = Math.max(0, Math.min(100, 100 - (avgTurbidity * 2)));
   
@@ -68,31 +90,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ sensors }) => {
 
   return (
     <div className="space-y-6">
-      {/* Top Row - Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Overall Water Quality */}
+        {/* Project Overview */}
         <div className="bg-white rounded-lg p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Overall water quality</h3>
-          <div className="flex items-center justify-center">
-            <div className="relative w-32 h-32">
-              <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
-                <path
-                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  fill="none"
-                  stroke="#E5E7EB"
-                  strokeWidth="2"
-                />
-                <path
-                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  fill="none"
-                  stroke="#10B981"
-                  strokeWidth="2"
-                  strokeDasharray={`${waterQualityScore}, 100`}
-                />
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-3xl font-bold text-gray-800">{Math.round(waterQualityScore)}</span>
-              </div>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Project Overview</h3>
+          <div className="flex items-left justify-left">
+            <div className="relative w-69 h-32">
+            <ul className="space-y-6 text-sm text-gray-600">
+            <li>Welcome to Project Amazi, the TTP Intern Impact Project 2025!</li>
+            <li>See real time data on water quality from a IoT network of loggers along the River Cam.</li>
+            </ul>
             </div>
           </div>
         </div>
@@ -137,29 +144,18 @@ export const Dashboard: React.FC<DashboardProps> = ({ sensors }) => {
           </div>
         </div>
 
-        {/* Turbidity */}
+        {/* Site Navigation */}
         <div className="bg-white rounded-lg p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Average Turbidity</h3>
-          <div className="flex items-center justify-center">
-            <div className="relative w-32 h-32">
-              <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
-                <path
-                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  fill="none"
-                  stroke="#E5E7EB"
-                  strokeWidth="2"
-                />
-                <path
-                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  fill="none"
-                  stroke="#10B981"
-                  strokeWidth="2"
-                  strokeDasharray={`${turbidityScore}, 100`}
-                />
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-3xl font-bold text-gray-800">{Math.round(turbidityScore)}</span>
-              </div>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Site Navigation</h3>
+          <div className="flex items-center justify-left">
+            <div className="relative w-64 h-32">
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li>Use the tabs to navigate between pages:</li>
+                <li>• Map: view live geographical data</li>
+                <li>• Sensors: stream live readings</li>
+                <li>• Export: access raw csv sensor data</li>
+                <li>• Info: learn measurement context</li>
+              </ul>
             </div>
           </div>
         </div>
