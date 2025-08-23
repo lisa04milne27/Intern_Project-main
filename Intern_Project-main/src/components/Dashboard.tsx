@@ -104,44 +104,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ sensors }) => {
           </div>
         </div>
 
-        {/* Past 7 Days */}
-        <div className="bg-white rounded-lg p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Past 7 days</h3>
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="flex gap-1">
-                {weeklyQualities.map((color, index) => (
-                  <div
-                    key={index}
-                    className="w-8 h-4 rounded-sm"
-                    style={{ backgroundColor: color }}
-                  />
-                ))}
-              </div>
-            </div>
-            <div className="flex justify-between text-sm text-gray-500">
-              <span>D-7</span>
-              <span>Today</span>
-            </div>
-            
-            <div className="mt-6">
-              <h4 className="text-sm font-medium text-gray-700 mb-2">Predicted bacteria level</h4>
-              <div className="flex items-center gap-2 mb-2">
-                <div className="flex-1 h-2 bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 rounded-full relative">
-                  <div 
-                    className="absolute top-0 w-0.5 h-4 bg-gray-800 -mt-1"
-                    style={{ left: '15%' }}
-                  />
-                </div>
-              </div>
-              <div className="flex justify-between text-xs text-gray-500">
-                <span>0</span>
-                <span>3</span>
-                <span>7</span>
-                <span>10</span>
-              </div>
-            </div>
-          </div>
+        {/* Sensor Image (replaces Past 7 Days) */}
+        <div className="bg-white rounded-lg p-6 shadow-sm flex flex-col items-center justify-center">
+          <img src="/Amazi.jpg" alt="Amazi Project" className="w-full h-auto max-h-80 object-contain" />
         </div>
 
         {/* Site Navigation */}

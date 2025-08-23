@@ -2,6 +2,8 @@ import React from 'react';
 import { Clock, MapPin, Eye, EyeOff } from 'lucide-react';
 
 interface MapControlsProps {
+  showDischargeOverlay: boolean;
+  onToggleDischargeOverlay: (show: boolean) => void;
   showHistoricalData: boolean;
   onToggleHistoricalData: (show: boolean) => void;
   historicalDataCount: number;
@@ -15,6 +17,8 @@ export const MapControls: React.FC<MapControlsProps> = ({
   historicalDataCount,
   selectedTimeRange,
   onTimeRangeChange,
+  showDischargeOverlay,
+  onToggleDischargeOverlay,
 }) => {
   const timeRanges = [
     { value: '24h', label: 'Last 24 Hours' },
@@ -44,6 +48,33 @@ export const MapControls: React.FC<MapControlsProps> = ({
             }`}
           >
             {showHistoricalData ? (
+              <>
+                <Eye className="w-3 h-3" />
+                Visible
+              </>
+            ) : (
+              <>
+                <EyeOff className="w-3 h-3" />
+                Hidden
+              </>
+            )}
+          </button>
+        </div>
+        {/* Toggle Storm Overflow/Sewage Discharge Overlay */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <MapPin className="w-4 h-4 text-red-600" />
+            <span className="text-sm text-gray-700">Storm/Sewage Discharge</span>
+          </div>
+          <button
+            onClick={() => onToggleDischargeOverlay(!showDischargeOverlay)}
+            className={`flex items-center gap-1 px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+              showDischargeOverlay
+                ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            {showDischargeOverlay ? (
               <>
                 <Eye className="w-3 h-3" />
                 Visible

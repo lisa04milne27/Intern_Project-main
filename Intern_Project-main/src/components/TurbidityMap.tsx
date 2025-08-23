@@ -1,11 +1,14 @@
 import React from 'react';
-import { MapContainer, TileLayer } from 'react-leaflet';
 import { TurbiditySensor } from '../types/sensor';
 import { SensorMarker } from './SensorMarker';
 import { HistoricalMarker } from './HistoricalMarker';
 import 'leaflet/dist/leaflet.css';
+// import { dischargeLocations } from '../data/mockDischargeLocations';
+import cambridgeSamplingPoints from '../data/fetchCambridgeSamplingPoints.js';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 
 interface TurbidityMapProps {
+  showDischargeOverlay?: boolean;
   sensors: TurbiditySensor[];
   selectedSensor: TurbiditySensor | null;
   onSensorSelect: (sensor: TurbiditySensor) => void;
@@ -30,6 +33,7 @@ export const TurbidityMap: React.FC<TurbidityMapProps> = ({
   historicalReadings = [],
   showHistoricalData = false,
   onHistoricalReadingSelect,
+  showDischargeOverlay = false,
 }) => {
   const center =
     sensors.length > 0
@@ -58,6 +62,17 @@ export const TurbidityMap: React.FC<TurbidityMapProps> = ({
       return interpolateColor(yellow, red, (ratio - 0.5) * 2);
     }
   };
+  // Load discharge overlay points from JSON
+  const [dischargeOverlayPoints, setDischargeOverlayPoints] = React.useState<any[]>([]);
+  React.useEffect(() => {
+    if (showDischargeOverlay) {
+      import('../data/cambridge_sampling_points.json').then(mod => {
+        setDischargeOverlayPoints(mod.default || mod);
+      });
+    } else {
+      setDischargeOverlayPoints([]);
+    }
+  }, [showDischargeOverlay]);
   return (
     <div className="h-full w-full rounded-lg overflow-hidden shadow-lg relative">
       {/* Legend overlay with gradient bar */}
@@ -90,6 +105,20 @@ export const TurbidityMap: React.FC<TurbidityMapProps> = ({
             color={getColor(sensor.turbidity)}
           />
         ))}
+          {/* Storm overflow/sewage discharge overlay (from processed CSV) */}
+          {showDischargeOverlay && dischargeOverlayPoints.map((loc) => (
+            <Marker key={loc.id} position={[loc.lat, loc.lng]}>
+              <Popup>
+                <div className="font-semibold text-red-700 mb-1">{loc.name}</div>
+                {loc.sampleDateTime && <div><b>Date:</b> {loc.sampleDateTime}</div>}
+                {loc.determinand && <div><b>Parameter:</b> {loc.determinand}</div>}
+                {loc.result && <div><b>Result:</b> {loc.result} {loc.unit}</div>}
+                {loc.resultInterpretation && <div><b>Interpretation:</b> {loc.resultInterpretation}</div>}
+                {loc.materialType && <div><b>Material:</b> {loc.materialType}</div>}
+                {loc.purpose && <div><b>Purpose:</b> {loc.purpose}</div>}
+              </Popup>
+            </Marker>
+          ))}
         {showHistoricalData &&
           historicalReadings.map((reading) => (
             <HistoricalMarker
