@@ -1,4 +1,5 @@
 // Save as fetchCambridgeSamplingPoints.js
+// Takes data from https://environment.data.gov.uk/water-quality/view/landing
 import fs from 'fs';
 import csv from 'csv-parser';
 
